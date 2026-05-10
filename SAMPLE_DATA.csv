@@ -1,0 +1,11 @@
+Address,City,State,ZipCode,Price,AgentName,AgentEmail,AgentPhone,PropertyType,Bedrooms,Bathrooms,SquareFeet,LotSize,YearBuilt,MLSID,DaysOnMarket,Status
+123 Main Street,Des Moines,IA,50309,325000,John Smith,john.smith@example.com,515-123-4567,Single Family,3,2,2100,0.25,2005,DM001001,15,Active
+456 Oak Avenue,Des Moines,IA,50311,275000,Sarah Johnson,sarah.johnson@example.com,515-234-5678,Condo,2,1.5,1500,0.15,2010,DM001002,8,Active
+789 Elm Road,Des Moines,IA,50314,385000,Michael Brown,michael.brown@example.com,515-345-6789,Townhouse,4,2.5,2500,0.35,2000,DM001003,22,Active
+321 Pine Lane,Des Moines,IA,50309,295000,Emily Davis,emily.davis@example.com,515-456-7890,Single Family,3,2,1950,0.3,2008,DM001004,5,Active
+654 Maple Court,Des Moines,IA,50312,450000,David Wilson,david.wilson@example.com,515-567-8901,Single Family,5,3,3200,0.5,1995,DM001005,30,Active
+987 Cedar Street,Des Moines,IA,50315,220000,Jessica Taylor,jessica.taylor@example.com,515-678-9012,Condo,1,1,900,0.1,2015,DM001006,3,Active
+147 Birch Drive,Des Moines,IA,50310,330000,Robert Anderson,robert.anderson@example.com,515-789-0123,Single Family,3,2,2050,0.25,2006,DM001007,18,Active
+258 Spruce Way,Des Moines,IA,50313,410000,Jennifer Martinez,jennifer.martinez@example.com,515-890-1234,Townhouse,4,3,2800,0.4,2002,DM001008,25,Active
+369 Walnut Place,Des Moines,IA,50316,240000,Christopher Lee,christopher.lee@example.com,515-901-2345,Condo,2,1,1100,0.12,2012,DM001009,7,Active
+741 Hickory Lane,Des Moines,IA,50309,360000,Amanda White,amanda.white@example.com,515-012-3456,Single Family,4,2.5,2350,0.3,2004,DM001010,12,Active
