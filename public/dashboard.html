@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Data Ingestion Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+        
+        .nav button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav button:hover {
+            background: #e8e8e8;
+        }
+        
+        .nav button.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input[type="file"],
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #667eea;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 400;
+        }
+        
+        .checkbox-label input {
+            width: auto;
+            cursor: pointer;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Property Data Ingestion Tool</h1>
+            <p>Upload, manage, and analyze property data</p>
+        </header>
+        
+        <div class="nav">
+            <button class="nav-btn active" data-section="upload">📤 Upload CSV</button>
+            <button class="nav-btn" data-section="properties">🏠 Properties</button>
+            <button class="nav-btn" data-section="history">📋 Load History</button>
+            <button class="nav-btn" data-section="health">✅ System Health</button>
+        </div>
+        
+        <div class="content">
+            <!-- Upload Section -->
+            <div class="section active" id="upload">
+                <h2>Upload Property Data</h2>
+                <p style="margin-bottom: 20px;">Upload a CSV file with property information</p>
+                
+                <div class="form-group">
+                    <label for="csvFile">Select CSV File:</label>
+                    <input type="file" id="csvFile" accept=".csv">
+                </div>
+                
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="triggerAutomations" checked>
+                        Trigger GoHighLevel automations
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="bulkAnalyze">
+                        Analyze all properties
+                    </label>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button id="uploadBtn" onclick="uploadFile()">Upload & Process</button>
+                </div>
+                
+                <div id="uploadMessage"></div>
+            </div>
+            
+            <!-- Properties Section -->
+            <div class="section" id="properties">
+                <h2>Properties</h2>
+                <div id="propertiesContent">
+                    <div class="loading">Loading properties...</div>
+                </div>
+            </div>
+            
+            <!-- Load History Section -->
+            <div class="section" id="history">
+                <h2>Load History</h2>
+                <div id="historyContent">
+                    <div class="loading">Loading history...</div>
+                </div>
+            </div>
+            
+            <!-- Health Check Section -->
+            <div class="section" id="health">
+                <h2>System Health</h2>
+                <div id="healthContent">
+                    <div class="loading">Checking system...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = '';  // Use same domain
+        
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const section = this.dataset.section;
+                
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                
+                // Show selected section
+                document.getElementById(section).classList.add('active');
+                this.classList.add('active');
+                
+                // Load data
+                if (section === 'properties') loadProperties();
+                else if (section === 'history') loadHistory();
+                else if (section === 'health') checkHealth();
+            });
+        });
+        
+        async function uploadFile() {
+            const fileInput = document.getElementById('csvFile');
+            const triggerAutomations = document.getElementById('triggerAutomations').checked;
+            const bulkAnalyze = document.getElementById('bulkAnalyze').checked;
+            const messageDiv = document.getElementById('uploadMessage');
+            
+            if (!fileInput.files.length) {
+                messageDiv.innerHTML = '<div class="alert alert-error">Please select a file</div>';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('csvFile', fileInput.files[0]);
+            formData.append('triggerAutomations', triggerAutomations);
+            formData.append('bulkAnalyze', bulkAnalyze);
+            
+            try {
+                document.getElementById('uploadBtn').disabled = true;
+                const response = await fetch(`${API_URL}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <h3>✅ Upload Started Successfully!</h3>
+                            <p><strong>Load ID:</strong> ${data.loadId}</p>
+                            <p><strong>File:</strong> ${data.fileName}</p>
+                            <p>Processing has begun. Check the Load History for progress.</p>
+                        </div>
+                    `;
+                    fileInput.value = '';
+                } else {
+                    messageDiv.innerHTML = `<div class="alert alert-error">Error: ${data.message || 'Upload failed'}</div>`;
+                }
+            } catch (err) {
+                messageDiv.innerHTML = `<div class="alert alert-error">Error: ${err.message}</div>`;
+            } finally {
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+        
+        async function loadProperties() {
+            const content = document.getElementById('propertiesContent');
+            try {
+                const response = await fetch(`${API_URL}/api/properties`);
+                const result = await response.json();
+                const data = Array.isArray(result) ? result : result.data || [];
+                
+                if (data.length === 0) {
+                    content.innerHTML = '<p>No properties found. Upload a CSV file to get started.</p>';
+                    return;
+                }
+                
+                let html = '<table><thead><tr><th>Address</th><th>City</th><th>Price</th><th>Agent</th><th>Status</th></tr></thead><tbody>';
+                
+                data.slice(0, 50).forEach(prop => {
+                    html += `
+                        <tr>
+                            <td>${prop.address || 'N/A'}</td>
+                            <td>${prop.city || 'N/A'}</td>
+                            <td>$${prop.price ? parseFloat(prop.price).toLocaleString() : 'N/A'}</td>
+                            <td>${prop.agentName || 'N/A'}</td>
+                            <td><span class="status-badge status-${prop.status || 'pending'}">${prop.status || 'Pending'}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                if (data.length > 50) html += `<p style="margin-top: 10px;"><em>Showing 50 of ${data.length} properties</em></p>`;
+                
+                content.innerHTML = html;
+            } catch (err) {
+                content.innerHTML = `<div class="alert alert-error">Error loading properties: ${err.message}</div>`;
+            }
+        }
+        
+        async function loadHistory() {
+            const content = document.getElementById('historyContent');
+            try {
+                const response = await fetch(`${API_URL}/api/loads`);
+                const result = await response.json();
+                const data = Array.isArray(result) ? result : result.data || [];
+                
+                if (data.length === 0) {
+                    content.innerHTML = '<p>No load history yet.</p>';
+                    return;
+                }
+                
+                let html = '<table><thead><tr><th>Load ID</th><th>File Name</th><th>Successful</th><th>Failed</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+                
+                data.forEach(load => {
+                    html += `
+                        <tr>
+                            <td>${load.id || 'N/A'}</td>
+                            <td>${load.filename || 'N/A'}</td>
+                            <td>${load.successful_records || 0}</td>
+                            <td>${load.failed_records || 0}</td>
+                            <td><span class="status-badge status-${load.status || 'pending'}">${load.status || 'Pending'}</span></td>
+                            <td>${load.created_at ? new Date(load.created_at).toLocaleString() : 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                content.innerHTML = html;
+            } catch (err) {
+                content.innerHTML = `<div class="alert alert-error">Error loading history: ${err.message}</div>`;
+            }
+        }
+        
+        async function checkHealth() {
+            const content = document.getElementById('healthContent');
+            try {
+                const response = await fetch(`${API_URL}/api/health`);
+                const data = await response.json();
+                
+                content.innerHTML = `
+                    <div class="alert alert-success">
+                        <h3>✅ System is Healthy</h3>
+                        <p><strong>Server Status:</strong> ${data.status}</p>
+                        <p><strong>Check Time:</strong> ${new Date().toLocaleString()}</p>
+                    </div>
+                `;
+            } catch (err) {
+                content.innerHTML = `<div class="alert alert-error">Error checking health: ${err.message}</div>`;
+            }
+        }
+        
+        // Initial health check
+        window.addEventListener('load', checkHealth);
+    </script>
+</body>
+</html>

@@ -10,6 +10,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Routes
 const uploadRoutes = require('./routes/upload');
